@@ -55,7 +55,7 @@
   Client                           API Layer                   Business Logic                   In-Memory Data Store
     |                                |                               |                                    |
     |        POST /v1/carts          |                               |                                    |
-    |------------------------------->|                               |                                    |                                  |
+    |------------------------------->|                               |                                    |
     |                                |--> call Cart Management       |                                    |
     |                                |--> create()                   |                                    |
     |                                |                               |--> store cart data                 |
