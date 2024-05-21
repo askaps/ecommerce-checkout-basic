@@ -42,7 +42,7 @@
 
 3. In-Memory Data Store
 
-   - Used to store user carts, orders, and discount codes temporarily using NodeCache (or similar).
+   - Used to store user carts, orders, and discount codes temporarily using cache-manager (or similar).
 
 4. Testing Layer
    - Uses Jest for unit tests to ensure the correctness of each component.
