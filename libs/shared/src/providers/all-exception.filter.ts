@@ -7,6 +7,14 @@ import { CheckedException } from './checked.exception';
 @Catch(CheckedException)
 export class AllExceptionsFilter implements ExceptionFilter {
   logger = new LoggerModule(AllExceptionsFilter.name);
+
+  /**
+   * Catches and handles a CheckedException.
+   *
+   * @param {CheckedException} exception - The exception to be caught and handled.
+   * @param {ArgumentsHost} host - The host object that contains information about the current request.
+   * @return {void} This function does not return anything.
+   */
   catch(exception: CheckedException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -24,7 +32,7 @@ export class AllExceptionsFilter implements ExceptionFilter {
 
     this.logger.error(contextId, message);
 
-    const apiResp = new ApiResponse<any>(false, exception.body ?? null, statusCode, message);
+    const apiResp = new ApiResponse<any>(exception.body ?? null, statusCode, message, false);
 
     response.status(apiResp.statusCode).json(apiResp);
   }
@@ -34,6 +42,13 @@ export class AllExceptionsFilter implements ExceptionFilter {
 export class BadRequestExceptionFilter implements ExceptionFilter {
   logger = new LoggerModule(AllExceptionsFilter.name);
 
+  /**
+   * Catches and handles a BadRequestException.
+   *
+   * @param {BadRequestException} exception - The exception to be caught and handled.
+   * @param {ArgumentsHost} host - The host object that contains information about the current request.
+   * @return {void} This function does not return anything.
+   */
   catch(exception: BadRequestException, host: ArgumentsHost): void {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -42,7 +57,7 @@ export class BadRequestExceptionFilter implements ExceptionFilter {
     const message = exception.message || ErrorMessages.SOMETHING_WENT_WRONG;
     const body = exceptionResponse ? exceptionResponse['message'] : null;
 
-    const apiResp = new ApiResponse<any>(false, body, statusCode, message);
+    const apiResp = new ApiResponse<any>(body, statusCode, message, false);
 
     response.status(apiResp.statusCode).json(apiResp);
   }

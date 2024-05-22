@@ -5,6 +5,7 @@ const { combine, timestamp, printf } = format;
 
 export class LogConfiguration {
   getWinstonConfiguredInstance(appName: string) {
+    // The custom format for the log messages
     const customFormat = printf(({ level, message, context, timestamp }) => {
       const className = context && context.class ? context.class : context;
       const logId = context && context.ctx ? context.ctx : '';
