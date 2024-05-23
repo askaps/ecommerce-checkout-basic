@@ -1,4 +1,4 @@
-import { HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { HttpStatus, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CheckedException, LoggerModule } from '@app/shared';
 import { ConfigService } from '@nestjs/config';
 import { CartsRepository } from './carts.repository';
@@ -7,12 +7,18 @@ import { v4 as uuidv4 } from 'uuid';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { TCartProduct } from './entities/cart-product.entity';
 import { PatchCartDto } from './dto/patch-cart.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 @Injectable()
 export class CartsService {
   private logger = new LoggerModule(CartsService.name);
 
-  constructor(readonly config: ConfigService, private readonly repository: CartsRepository) {}
+  constructor(
+    readonly config: ConfigService,
+    private readonly repository: CartsRepository,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   /**
    * Creates a new cart with the provided context and user ID.
@@ -99,7 +105,7 @@ export class CartsService {
         products: cartProducts,
       };
 
-      cart = this.calculateTotals(ctx, cart, cart.couponCode);
+      cart = await this.calculateTotals(ctx, cart, cart.couponCode);
 
       this.logger.info(ctx, `Updating cart, id: ${id}, payload: ${JSON.stringify(cart)}`);
 
@@ -144,11 +150,11 @@ export class CartsService {
    * Calculates the totals of a cart.
    *
    * @param ctx - The context of the request.
-   * @param cart - The cart to calculate the totals for.
+  async  * @param cart - The cart to calculate the totals for.Promise<TCart>
    * @param [couponCode] - The coupon code to apply to the cart.
    * @returns A promise that resolves to the cart.
    */
-  calculateTotals(ctx: string, cart: TCart, couponCode: string | null): TCart {
+  async calculateTotals(ctx: string, cart: TCart, couponCode: string | null): Promise<TCart> {
     // Initialize  with  default value of 0
     const totals: Partial<Cart> = {
       subTotal: 0,
@@ -159,15 +165,24 @@ export class CartsService {
     // check coupon code validity: mock by enviroment variable
     if (couponCode) {
       // TODO: check coupon validity using nthOrderDiscountCount
-      // const nthOrderDiscountCount = this.config.get<number>('nthOrderDiscountCount');
+      const nthOrderDiscountCount = this.config.get<number>('nthOrderDiscountCount');
+
+      // get previously saved order count
+      const previousOrderCount = parseInt(await this.cacheManager.get('orderCount')) || 0;
+
+      // get coupon discount value
       const nthOrderCouponValue = this.config.get<number>('nthOrderCouponValue');
 
-      if (nthOrderCouponValue) {
+      // check if previousOrderCount + 1 is divided by nthOrderDiscountCount
+      // that is current order should get discount
+      if ((previousOrderCount + 1) % nthOrderDiscountCount === 0 && nthOrderCouponValue) {
         cart.products.forEach((product) => {
           product.discount = product.subTotal / nthOrderCouponValue;
         });
 
         cart.couponCode = couponCode;
+      } else {
+        cart.couponCode = null;
       }
     }
 
@@ -213,7 +228,7 @@ export class CartsService {
     }
 
     if (request.couponCode) {
-      cart = this.calculateTotals(ctx, cart, request.couponCode);
+      cart = await this.calculateTotals(ctx, cart, request.couponCode);
 
       this.logger.info(ctx, `Updating cart, id: ${id}, payload: ${JSON.stringify(cart)}`);
 

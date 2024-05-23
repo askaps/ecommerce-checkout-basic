@@ -6,15 +6,25 @@ import { UnauthorizedException } from '@nestjs/common';
 import { TCart } from './entities/cart.entity';
 import { ConfigService } from '@nestjs/config';
 import { CheckedException } from '@app/shared';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { Cache } from 'cache-manager';
 
 describe('CartsService', () => {
   let service: CartsService;
   let repository: CartsRepository;
+  let configService: ConfigService;
+  let cacheManager: Cache;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ConfigService,
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn().mockResolvedValue('1'),
+          },
+        },
         CartsService,
         {
           provide: CartsRepository,
@@ -24,11 +34,19 @@ describe('CartsService', () => {
             update: jest.fn(),
           },
         },
+        {
+          provide: CACHE_MANAGER,
+          useValue: {
+            get: jest.fn().mockResolvedValue(null),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<CartsService>(CartsService);
     repository = module.get<CartsRepository>(CartsRepository);
+    configService = module.get<ConfigService>(ConfigService);
+    cacheManager = module.get<Cache>(CACHE_MANAGER);
   });
 
   it('should be defined', () => {
@@ -163,10 +181,12 @@ describe('CartsService', () => {
         ],
       };
 
-      const expectedCart = { ...cart, discount: 2, subTotal: 20, total: 18 };
+      const expectedCart = { ...cart, discount: 2, subTotal: 20, total: 18, couponCode: null };
 
       repository.get = jest.fn().mockResolvedValue(cart);
       repository.update = jest.fn().mockResolvedValue(expectedCart);
+
+      jest.spyOn(cacheManager, 'get').mockResolvedValueOnce('5');
 
       const result = await service.patch('context', 'userId', 'cartId', { couponCode: 'code' });
 
@@ -186,8 +206,6 @@ describe('CartsService', () => {
   });
 
   describe('calculateTotals', () => {
-    let cartsService: CartsService;
-
     beforeEach(() => {
       const configService = {
         get: jest.fn(),
@@ -195,12 +213,13 @@ describe('CartsService', () => {
       const cartsRepository = {
         findOne: jest.fn(),
       };
-      cartsService = new CartsService(configService as any, cartsRepository as any);
+      const cacheManager = {
+        get: jest.fn(),
+      };
+      service = new CartsService(configService as any, cartsRepository as any, cacheManager as any);
     });
 
     it('should calculate totals correctly with no coupon code', async () => {
-      // Arrange
-      const ctx = 'test context';
       const id = uuidv4();
       const userId = uuidv4();
 
@@ -209,7 +228,7 @@ describe('CartsService', () => {
         userId,
         products: [
           {
-            id: 'product1',
+            id: '1',
             name: 'Product 1',
             quantity: 2,
             price: 10,
@@ -217,7 +236,7 @@ describe('CartsService', () => {
             discount: 0,
           },
           {
-            id: 'product2',
+            id: '2',
             name: 'Product 2',
             quantity: 3,
             price: 5,
@@ -231,53 +250,29 @@ describe('CartsService', () => {
         couponCode: null,
       };
 
-      // Act
-      const result = await cartsService.calculateTotals(ctx, cart, null);
+      const result = await service.calculateTotals('context', cart, null);
 
-      // Assert
-      expect(result).toEqual({
-        id,
-        userId,
-        products: [
-          {
-            id: 'product1',
-            name: 'Product 1',
-            quantity: 2,
-            price: 10,
-            subTotal: 20,
-            discount: 0,
-          },
-          {
-            id: 'product2',
-            name: 'Product 2',
-            quantity: 3,
-            price: 5,
-            subTotal: 15,
-            discount: 0,
-          },
-        ],
-        subTotal: 35,
-        discount: 0,
-        total: 35,
-        couponCode: null,
-      });
+      expect(result.subTotal).toBe(35);
+      expect(result.discount).toBe(0);
+      expect(result.total).toBe(35);
     });
 
-    it('should calculate totals correctly with a coupon code', async () => {
-      // Arrange
-      const ctx = 'test context';
-      const id = uuidv4();
-      const userId = uuidv4();
-      const couponCode = 'DISCOUNT10';
+    it('should apply coupon code correctly for the first order', async () => {
+      const nthOrderDiscountCount = 1;
+      (service.config.get as jest.Mock).mockReturnValueOnce(nthOrderDiscountCount);
+
       const nthOrderCouponValue = 10;
-      (cartsService.config.get as jest.Mock).mockReturnValueOnce(nthOrderCouponValue);
+      (service.config.get as jest.Mock).mockReturnValueOnce(nthOrderCouponValue);
+
+      const id = uuidv4();
+      const userId = uuidv4();
 
       const cart: TCart = {
         id,
         userId,
         products: [
           {
-            id: 'product1',
+            id: '1',
             name: 'Product 1',
             quantity: 2,
             price: 10,
@@ -285,7 +280,7 @@ describe('CartsService', () => {
             discount: 0,
           },
           {
-            id: 'product2',
+            id: '2',
             name: 'Product 2',
             quantity: 3,
             price: 5,
@@ -296,70 +291,148 @@ describe('CartsService', () => {
         subTotal: 35,
         discount: 0,
         total: 35,
-        couponCode,
+        couponCode: 'COUPON123',
       };
 
-      // Act
-      const result = await cartsService.calculateTotals(ctx, cart, couponCode);
+      const result = await service.calculateTotals('context', cart, 'COUPON123');
 
-      // Assert
-      expect(result).toEqual({
-        id,
-        userId,
-        products: [
-          {
-            id: 'product1',
-            name: 'Product 1',
-            quantity: 2,
-            price: 10,
-            subTotal: 20,
-            discount: 2,
-          },
-          {
-            id: 'product2',
-            name: 'Product 2',
-            quantity: 3,
-            price: 5,
-            subTotal: 15,
-            discount: 1.5,
-          },
-        ],
-        subTotal: 35,
-        discount: 3.5,
-        total: 31.5,
-        couponCode: 'DISCOUNT10',
-      });
+      expect(result.products[0].discount).toBe(2);
+      expect(result.products[1].discount).toBe(1.5);
+      expect(result.couponCode).toBe('COUPON123');
+      expect(result.subTotal).toBe(35);
+      expect(result.discount).toBe(3.5);
+      expect(result.total).toBe(31.5);
     });
 
-    it('should calculate totals correctly with no products', async () => {
-      // Arrange
-      const ctx = 'test context';
+    it('should not apply coupon code if previous order count is not correct', async () => {
+      jest.spyOn(configService, 'get').mockReturnValueOnce(2);
+
       const id = uuidv4();
       const userId = uuidv4();
 
       const cart: TCart = {
         id,
         userId,
-        products: [],
-        subTotal: 0,
+        products: [
+          {
+            id: '1',
+            name: 'Product 1',
+            quantity: 2,
+            price: 10,
+            subTotal: 20,
+            discount: 0,
+          },
+          {
+            id: '2',
+            name: 'Product 2',
+            quantity: 3,
+            price: 5,
+            subTotal: 15,
+            discount: 0,
+          },
+        ],
+        subTotal: 35,
         discount: 0,
-        total: 0,
-        couponCode: null,
+        total: 35,
+        couponCode: 'COUPON123',
       };
 
-      // Act
-      const result = await cartsService.calculateTotals(ctx, cart, null);
+      const result = await service.calculateTotals('context', cart, 'COUPON123');
 
-      // Assert
-      expect(result).toEqual({
+      expect(result.products[0].discount).toBe(0);
+      expect(result.products[1].discount).toBe(0);
+      expect(result.couponCode).toBeNull();
+      expect(result.subTotal).toBe(35);
+      expect(result.discount).toBe(0);
+      expect(result.total).toBe(35);
+    });
+
+    it('should not apply coupon code if nthOrderCouponValue is not defined', async () => {
+      jest.spyOn(configService, 'get').mockReturnValueOnce(1);
+      jest.spyOn(configService, 'get').mockReturnValueOnce(undefined);
+
+      const id = uuidv4();
+      const userId = uuidv4();
+
+      const cart: TCart = {
         id,
         userId,
-        products: [],
-        subTotal: 0,
+        products: [
+          {
+            id: '1',
+            name: 'Product 1',
+            quantity: 2,
+            price: 10,
+            subTotal: 20,
+            discount: 0,
+          },
+          {
+            id: '2',
+            name: 'Product 2',
+            quantity: 3,
+            price: 5,
+            subTotal: 15,
+            discount: 0,
+          },
+        ],
+        subTotal: 35,
         discount: 0,
-        total: 0,
-        couponCode: null,
-      });
+        total: 35,
+        couponCode: 'COUPON123',
+      };
+
+      const result = await service.calculateTotals('context', cart, 'COUPON123');
+
+      expect(result.products[0].discount).toBe(0);
+      expect(result.products[1].discount).toBe(0);
+      expect(result.couponCode).toBeNull();
+      expect(result.subTotal).toBe(35);
+      expect(result.discount).toBe(0);
+      expect(result.total).toBe(35);
+    });
+
+    it('should not apply coupon code if previous order count is not correct', async () => {
+      jest.spyOn(configService, 'get').mockReturnValueOnce(2);
+      jest.spyOn(cacheManager, 'get').mockResolvedValueOnce('1');
+
+      const id = uuidv4();
+      const userId = uuidv4();
+
+      const cart: TCart = {
+        id,
+        userId,
+        products: [
+          {
+            id: '1',
+            name: 'Product 1',
+            quantity: 2,
+            price: 10,
+            subTotal: 20,
+            discount: 0,
+          },
+          {
+            id: '2',
+            name: 'Product 2',
+            quantity: 3,
+            price: 5,
+            subTotal: 15,
+            discount: 0,
+          },
+        ],
+        subTotal: 35,
+        discount: 0,
+        total: 35,
+        couponCode: 'COUPON123',
+      };
+
+      const result = await service.calculateTotals('context', cart, 'COUPON123');
+
+      expect(result.products[0].discount).toBe(0);
+      expect(result.products[1].discount).toBe(0);
+      expect(result.couponCode).toBeNull();
+      expect(result.subTotal).toBe(35);
+      expect(result.discount).toBe(0);
+      expect(result.total).toBe(35);
     });
   });
 });

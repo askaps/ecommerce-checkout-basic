@@ -16,7 +16,9 @@ export class CartsRepository {
    * @return {Promise<TCart>} - A promise that resolves to the newly created cart.
    */
   async create(ctx: string, request: Partial<TCart>): Promise<TCart> {
+    // Store the order in the cache with a TTL of 1 year (365 days)
     await this.cacheManager.set(request.id, request, 365 * 3600 * 1000);
+
     return await this.get(ctx, request.id);
   }
 

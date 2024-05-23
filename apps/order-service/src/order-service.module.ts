@@ -5,6 +5,7 @@ import configSchema from './config/config.schema';
 import configuration from './config/configuration';
 import { LoggerMiddleware } from '@app/shared';
 import { CartsModule } from './carts/carts.module';
+import { CheckoutsModule } from './checkouts/checkouts.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CartsModule } from './carts/carts.module';
     }),
     CacheModule.register({ isGlobal: true }),
     CartsModule,
+    CheckoutsModule,
   ],
 })
 export class OrderServiceModule {
