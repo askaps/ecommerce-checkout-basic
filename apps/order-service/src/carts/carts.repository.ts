@@ -46,4 +46,17 @@ export class CartsRepository {
     await this.cacheManager.set(id, request, 365 * 3600 * 1000);
     return await this.get(ctx, id);
   }
+
+  /**
+   * Deletes a cart from the cache.
+   *
+   * @param {string} ctx - The context of the request.
+   * @param {string} id - The id of the cart to be deleted.
+   * @return {Promise<boolean>} A promise that resolves to true if the cart was deleted successfully.
+   */
+  async delete(ctx: string, id: string): Promise<boolean> {
+    // Delete the cart from the cache
+    await this.cacheManager.del(id);
+    return true;
+  }
 }

@@ -18,12 +18,12 @@ describe('CheckoutsService', () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         ConfigService,
-
         CheckoutsService,
         {
           provide: CartsService,
           useValue: {
             get: jest.fn(),
+            delete: jest.fn(),
           },
         },
         {

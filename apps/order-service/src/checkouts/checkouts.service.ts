@@ -33,7 +33,9 @@ export class CheckoutsService {
       this.logger.info(ctx, `Creating new order with payload: ${JSON.stringify(order)}`);
       order = await this.repository.create(ctx, order);
 
-      // TODO: delete cart
+      // Delete the cart
+      this.logger.info(ctx, `Deleting cart with id: ${cartId}`);
+      this.cartsService.delete(ctx, cartId);
 
       return order;
     } catch (error) {

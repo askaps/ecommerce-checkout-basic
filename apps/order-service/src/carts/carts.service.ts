@@ -238,4 +238,19 @@ export class CartsService {
       return cart;
     }
   }
+
+  /**
+   * Deletes a cart with the provided id.
+   *
+   * @param ctx - The context of the request.
+   * @param id - The id of the cart to be deleted.
+   * @return A promise that resolves to a boolean indicating if the cart was deleted.
+   */
+  public async delete(ctx: string, id: string): Promise<boolean> {
+    // Log the received delete cart request
+    this.logger.info(ctx, `Received delete cart request, id: ${id}`);
+
+    // Delete the cart from the repository and return the result
+    return await this.repository.delete(ctx, id);
+  }
 }
