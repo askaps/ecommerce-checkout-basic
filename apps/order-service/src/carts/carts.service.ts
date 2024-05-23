@@ -6,12 +6,13 @@ import { Cart, TCart } from './entities/cart.entity';
 import { v4 as uuidv4 } from 'uuid';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { TCartProduct } from './entities/cart-product.entity';
+import { PatchCartDto } from './dto/patch-cart.dto';
 
 @Injectable()
 export class CartsService {
   private logger = new LoggerModule(CartsService.name);
 
-  constructor(private readonly config: ConfigService, private readonly repository: CartsRepository) {}
+  constructor(readonly config: ConfigService, private readonly repository: CartsRepository) {}
 
   /**
    * Creates a new cart with the provided context and user ID.
@@ -79,6 +80,10 @@ export class CartsService {
     // Retrieve the cart from the repository with the provided id
     let cart = await this.repository.get(ctx, id);
 
+    if (!cart) {
+      throw new CheckedException(`Cart with id: ${id} not found`, HttpStatus.NOT_FOUND, ctx);
+    }
+
     // If the cart's userId does not match the userId in the request context
     // throw an UnauthorizedException
     if (cart.userId !== userId) {
@@ -94,13 +99,7 @@ export class CartsService {
         products: cartProducts,
       };
 
-      const totals = this.calculateTotals(ctx, cart);
-
-      cart = {
-        // Combine the existing cart data with the updated totals
-        ...cart,
-        ...totals,
-      };
+      cart = this.calculateTotals(ctx, cart, cart.couponCode);
 
       this.logger.info(ctx, `Updating cart, id: ${id}, payload: ${JSON.stringify(cart)}`);
 
@@ -146,15 +145,31 @@ export class CartsService {
    *
    * @param ctx - The context of the request.
    * @param cart - The cart to calculate the totals for.
-   * @returns A promise that resolves to the totals of the cart.
+   * @param [couponCode] - The coupon code to apply to the cart.
+   * @returns A promise that resolves to the cart.
    */
-  calculateTotals(ctx: string, cart: TCart): Partial<Cart> {
+  calculateTotals(ctx: string, cart: TCart, couponCode: string | null): TCart {
     // Initialize  with  default value of 0
     const totals: Partial<Cart> = {
       subTotal: 0,
       discount: 0,
       total: 0,
     };
+
+    // check coupon code validity: mock by enviroment variable
+    if (couponCode) {
+      // TODO: check coupon validity using nthOrderDiscountCount
+      // const nthOrderDiscountCount = this.config.get<number>('nthOrderDiscountCount');
+      const nthOrderCouponValue = this.config.get<number>('nthOrderCouponValue');
+
+      if (nthOrderCouponValue) {
+        cart.products.forEach((product) => {
+          product.discount = product.subTotal / nthOrderCouponValue;
+        });
+
+        cart.couponCode = couponCode;
+      }
+    }
 
     // Iterate through the cart's products and add their subTotal and discount to the totals
     cart.products.forEach((product) => {
@@ -165,6 +180,47 @@ export class CartsService {
     // Calculate the total by subtracting the discount from the subTotal
     totals.total = totals.subTotal - totals.discount;
 
-    return totals;
+    return {
+      // Combine the existing cart data with the updated totals
+      ...cart,
+      ...totals,
+    };
+  }
+
+  /**
+   * Updates a cart with the provided id and request data.
+   *
+   * @param ctx - The context of the request.
+   * @param userId - The id of the user making the request.
+   * @param id - The id of the cart to be updated.
+   * @param request - The data to update the cart with.
+   * @return The updated cart.
+   */
+  public async patch(ctx: string, userId: string, id: string, request: PatchCartDto): Promise<TCart> {
+    this.logger.info(ctx, `Received patch cart request, id: ${id}, payload: ${JSON.stringify(request)}`);
+
+    // Retrieve the cart from the repository with the provided id
+    let cart = await this.repository.get(ctx, id);
+
+    if (!cart) {
+      throw new CheckedException(`Cart with id: ${id} not found`, HttpStatus.NOT_FOUND, ctx);
+    }
+
+    // If the cart's userId does not match the userId in the request context
+    // throw an UnauthorizedException
+    if (cart.userId !== userId) {
+      throw new UnauthorizedException();
+    }
+
+    if (request.couponCode) {
+      cart = this.calculateTotals(ctx, cart, request.couponCode);
+
+      this.logger.info(ctx, `Updating cart, id: ${id}, payload: ${JSON.stringify(cart)}`);
+
+      // Update the cart in the repository with the provided data and retrieve the updated cart
+      return await this.repository.update(ctx, id, cart);
+    } else {
+      return cart;
+    }
   }
 }

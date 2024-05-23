@@ -5,6 +5,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { UnauthorizedException } from '@nestjs/common';
 import { TCart } from './entities/cart.entity';
 import { ConfigService } from '@nestjs/config';
+import { CheckedException } from '@app/shared';
 
 describe('CartsService', () => {
   let service: CartsService;
@@ -56,6 +57,14 @@ describe('CartsService', () => {
   });
 
   describe('get', () => {
+    it('should throw an exception if the cart is not found', async () => {
+      repository.get = jest.fn().mockResolvedValue(null);
+
+      await expect(service.patch('context', 'userId', 'cartId', { couponCode: 'code' })).rejects.toThrow(
+        CheckedException,
+      );
+    });
+
     it('should get a cart by id', async () => {
       const userId = uuidv4();
       const ctx = 'test';
@@ -83,6 +92,14 @@ describe('CartsService', () => {
   });
 
   describe('update', () => {
+    it('should throw an exception if the cart is not found', async () => {
+      repository.get = jest.fn().mockResolvedValue(null);
+
+      await expect(service.patch('context', 'userId', 'cartId', { couponCode: 'code' })).rejects.toThrow(
+        CheckedException,
+      );
+    });
+
     it('should update a cart by id', async () => {
       const userId = uuidv4();
       const ctx = 'test';
@@ -117,6 +134,232 @@ describe('CartsService', () => {
       repository.get = jest.fn().mockResolvedValue(cart);
 
       await expect(service.update(ctx, userId, id, request)).rejects.toThrow(UnauthorizedException);
+    });
+  });
+
+  describe('patch', () => {
+    it('should throw an exception if the cart is not found', async () => {
+      repository.get = jest.fn().mockResolvedValue(null);
+
+      await expect(service.patch('context', 'userId', 'cartId', { couponCode: 'code' })).rejects.toThrow(
+        CheckedException,
+      );
+    });
+
+    it('should throw an exception if the userId does not match the cart userId', async () => {
+      repository.get = jest.fn().mockResolvedValue({ userId: 'otherUserId' });
+
+      await expect(service.patch('context', 'userId', 'cartId', { couponCode: 'code' })).rejects.toThrow(
+        UnauthorizedException,
+      );
+    });
+
+    it('should calculate totals and update the cart if a coupon code is provided', async () => {
+      const productId = uuidv4();
+      const cart = {
+        userId: 'userId',
+        products: [
+          { id: productId, quantity: 2, name: `Product Name - ${productId}`, price: 10, discount: 2, subTotal: 20 },
+        ],
+      };
+
+      const expectedCart = { ...cart, discount: 2, subTotal: 20, total: 18 };
+
+      repository.get = jest.fn().mockResolvedValue(cart);
+      repository.update = jest.fn().mockResolvedValue(expectedCart);
+
+      const result = await service.patch('context', 'userId', 'cartId', { couponCode: 'code' });
+
+      expect(result).toEqual(expectedCart);
+      expect(repository.update).toHaveBeenCalledWith('context', 'cartId', expectedCart);
+    });
+
+    it('should return the cart if no coupon code is provided', async () => {
+      const cart = { userId: 'userId', products: [{ price: 10, quantity: 2 }] };
+      repository.get = jest.fn().mockResolvedValue(cart);
+
+      const result = await service.patch('context', 'userId', 'cartId', {});
+
+      expect(result).toEqual(cart);
+      expect(repository.update).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('calculateTotals', () => {
+    let cartsService: CartsService;
+
+    beforeEach(() => {
+      const configService = {
+        get: jest.fn(),
+      };
+      const cartsRepository = {
+        findOne: jest.fn(),
+      };
+      cartsService = new CartsService(configService as any, cartsRepository as any);
+    });
+
+    it('should calculate totals correctly with no coupon code', async () => {
+      // Arrange
+      const ctx = 'test context';
+      const id = uuidv4();
+      const userId = uuidv4();
+
+      const cart: TCart = {
+        id,
+        userId,
+        products: [
+          {
+            id: 'product1',
+            name: 'Product 1',
+            quantity: 2,
+            price: 10,
+            subTotal: 20,
+            discount: 0,
+          },
+          {
+            id: 'product2',
+            name: 'Product 2',
+            quantity: 3,
+            price: 5,
+            subTotal: 15,
+            discount: 0,
+          },
+        ],
+        subTotal: 35,
+        discount: 0,
+        total: 35,
+        couponCode: null,
+      };
+
+      // Act
+      const result = await cartsService.calculateTotals(ctx, cart, null);
+
+      // Assert
+      expect(result).toEqual({
+        id,
+        userId,
+        products: [
+          {
+            id: 'product1',
+            name: 'Product 1',
+            quantity: 2,
+            price: 10,
+            subTotal: 20,
+            discount: 0,
+          },
+          {
+            id: 'product2',
+            name: 'Product 2',
+            quantity: 3,
+            price: 5,
+            subTotal: 15,
+            discount: 0,
+          },
+        ],
+        subTotal: 35,
+        discount: 0,
+        total: 35,
+        couponCode: null,
+      });
+    });
+
+    it('should calculate totals correctly with a coupon code', async () => {
+      // Arrange
+      const ctx = 'test context';
+      const id = uuidv4();
+      const userId = uuidv4();
+      const couponCode = 'DISCOUNT10';
+      const nthOrderCouponValue = 10;
+      (cartsService.config.get as jest.Mock).mockReturnValueOnce(nthOrderCouponValue);
+
+      const cart: TCart = {
+        id,
+        userId,
+        products: [
+          {
+            id: 'product1',
+            name: 'Product 1',
+            quantity: 2,
+            price: 10,
+            subTotal: 20,
+            discount: 0,
+          },
+          {
+            id: 'product2',
+            name: 'Product 2',
+            quantity: 3,
+            price: 5,
+            subTotal: 15,
+            discount: 0,
+          },
+        ],
+        subTotal: 35,
+        discount: 0,
+        total: 35,
+        couponCode,
+      };
+
+      // Act
+      const result = await cartsService.calculateTotals(ctx, cart, couponCode);
+
+      // Assert
+      expect(result).toEqual({
+        id,
+        userId,
+        products: [
+          {
+            id: 'product1',
+            name: 'Product 1',
+            quantity: 2,
+            price: 10,
+            subTotal: 20,
+            discount: 2,
+          },
+          {
+            id: 'product2',
+            name: 'Product 2',
+            quantity: 3,
+            price: 5,
+            subTotal: 15,
+            discount: 1.5,
+          },
+        ],
+        subTotal: 35,
+        discount: 3.5,
+        total: 31.5,
+        couponCode: 'DISCOUNT10',
+      });
+    });
+
+    it('should calculate totals correctly with no products', async () => {
+      // Arrange
+      const ctx = 'test context';
+      const id = uuidv4();
+      const userId = uuidv4();
+
+      const cart: TCart = {
+        id,
+        userId,
+        products: [],
+        subTotal: 0,
+        discount: 0,
+        total: 0,
+        couponCode: null,
+      };
+
+      // Act
+      const result = await cartsService.calculateTotals(ctx, cart, null);
+
+      // Assert
+      expect(result).toEqual({
+        id,
+        userId,
+        products: [],
+        subTotal: 0,
+        discount: 0,
+        total: 0,
+        couponCode: null,
+      });
     });
   });
 });

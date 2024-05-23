@@ -1,4 +1,4 @@
-import { Body, Controller, Get, HttpStatus, Param, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpStatus, Param, Patch, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ReqUser } from '@app/auth';
 import { CartsService } from './carts.service';
@@ -6,6 +6,7 @@ import { ApiResponse, ContextId } from '@app/shared';
 import { TCart } from './entities/cart.entity';
 import { UpdateCartDto } from './dto/update-cart.dto';
 import { ApiTags, ApiOperation, ApiResponse as SwaggerApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
+import { PatchCartDto } from './dto/patch-cart.dto';
 
 @Controller('carts')
 @ApiTags('Carts')
@@ -82,6 +83,35 @@ export class CartsController {
     @Body() request: UpdateCartDto,
   ): Promise<ApiResponse<TCart>> {
     const data = await this.service.update(ctx, userId, cartId, request);
-    return new ApiResponse(data, HttpStatus.CREATED, ctx);
+    return new ApiResponse(data, HttpStatus.OK, ctx);
+  }
+
+  @Patch('/:id')
+  @ApiOperation({ summary: 'Applies partial modifications to a cart by ID.' })
+  @SwaggerApiResponse({ status: HttpStatus.OK, type: ApiResponse })
+  @ApiParam({
+    name: 'id',
+    description: 'Cart Id',
+    required: true,
+    type: String,
+  })
+  /**
+   * Applies partial modifications to a cart by ID like applying coupon
+   *
+   * @param ctx - The context of the request.
+   * @param userId - The id of the user to match against the cart's userId.
+   * @param cartId - The id of the cart to be updated.
+   * @param request - The data to patch the cart with.
+   *
+   * @returns A promise that resolves to the updated cart.
+   */
+  public async patch(
+    @ContextId() ctx: string,
+    @ReqUser('userId') userId: string,
+    @Param('id') cartId: string,
+    @Body() request: PatchCartDto,
+  ): Promise<ApiResponse<TCart>> {
+    const data = await this.service.patch(ctx, userId, cartId, request);
+    return new ApiResponse(data, HttpStatus.OK, ctx);
   }
 }
