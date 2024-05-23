@@ -4,6 +4,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import configSchema from './config/config.schema';
 import configuration from './config/configuration';
 import { LoggerMiddleware } from '@app/shared';
+import { CartsModule } from './carts/carts.module';
 
 @Module({
   imports: [
@@ -14,7 +15,8 @@ import { LoggerMiddleware } from '@app/shared';
       validationSchema: configSchema,
       cache: true,
     }),
-    CacheModule.register(),
+    CacheModule.register({ isGlobal: true }),
+    CartsModule,
   ],
 })
 export class OrderServiceModule {

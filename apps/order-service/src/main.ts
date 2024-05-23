@@ -15,7 +15,6 @@ async function bootstrap() {
   const logger = new LogConfiguration().getWinstonConfiguredInstance(appName);
   try {
     app.setGlobalPrefix(`${appName}/api/v1`);
-    app.setGlobalPrefix(appName);
     app.useLogger(logger);
     app.useGlobalFilters(new AllExceptionsFilter());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
