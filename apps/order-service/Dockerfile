@@ -2,7 +2,6 @@
 FROM node:16 as builder
 WORKDIR /usr/src/app
 
-COPY .env ./
 COPY package.json ./
 COPY yarn.lock ./
 COPY tsconfig*.json ./
@@ -24,7 +23,6 @@ RUN yarn run build:order-service
 # Final production stage
 FROM node:16
 WORKDIR /usr/src/app
-COPY --from=builder /usr/src/app/.env .
 COPY --from=builder /usr/src/app/apps ./dist/apps
 COPY --from=builder /usr/src/app/libs ./dist/libs
 COPY --from=builder /usr/src/app/dist/apps/order-service ./dist/
