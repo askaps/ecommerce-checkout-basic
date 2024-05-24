@@ -196,8 +196,6 @@ export class CartsService {
   async applyCoupon(ctx, cart: TCart, couponCode: string): Promise<TCart> {
     const couponValidity = await this.couponsService.get(ctx, couponCode);
 
-    console.log(couponCode, couponValidity);
-
     const nthOrderDiscountCount = this.config.get<number>('nthOrderDiscountCount');
 
     // get previously saved order count
@@ -205,6 +203,11 @@ export class CartsService {
 
     // get coupon discount value
     const nthOrderCouponValue = this.config.get<number>('nthOrderCouponValue');
+
+    this.logger.info(
+      ctx,
+      `Trying to apply coupon: ${couponCode}, couponValidity: ${couponValidity}, nthOrderDiscountCount: ${nthOrderDiscountCount}, previousOrderCount: ${previousOrderCount}, nthOrderCouponValue: ${nthOrderCouponValue}`,
+    );
 
     // check if previousOrderCount + 1 is divided by nthOrderDiscountCount
     // that is current order should get discount
