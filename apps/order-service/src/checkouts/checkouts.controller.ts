@@ -6,7 +6,7 @@ import { ApiResponse, ContextId } from '@app/shared';
 import { TOrder } from './entities/order.entity';
 import { ApiTags, ApiOperation, ApiResponse as SwaggerApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 
-@Controller('checkouts')
+@Controller('v1/checkouts')
 @ApiTags('Checkouts')
 @UseGuards(AuthGuard())
 @ApiBearerAuth()

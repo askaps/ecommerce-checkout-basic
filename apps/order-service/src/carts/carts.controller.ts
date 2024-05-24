@@ -8,7 +8,7 @@ import { UpdateCartDto } from './dto/update-cart.dto';
 import { ApiTags, ApiOperation, ApiResponse as SwaggerApiResponse, ApiBearerAuth, ApiParam } from '@nestjs/swagger';
 import { PatchCartDto } from './dto/patch-cart.dto';
 
-@Controller('carts')
+@Controller('v1/carts')
 @ApiTags('Carts')
 @UseGuards(AuthGuard())
 @ApiBearerAuth()

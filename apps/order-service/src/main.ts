@@ -14,13 +14,13 @@ async function bootstrap() {
 
   const logger = new LogConfiguration().getWinstonConfiguredInstance(appName);
   try {
-    app.setGlobalPrefix(`${appName}/api/v1`);
+    app.setGlobalPrefix(`${appName}/api`);
     app.useLogger(logger);
     app.useGlobalFilters(new AllExceptionsFilter());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     SetupSwagger(app, appName, [OrderServiceModule]);
-    logger.log(`Swagger url -> ${appName}/api/v1/docs`, 'swagger');
+    logger.log(`Swagger url -> ${appName}/api/docs`, 'swagger');
 
     await app.listen(appPort);
     logger.log(`${appName} started on port ${appPort} in ${env} mode`, 'bootstrap');

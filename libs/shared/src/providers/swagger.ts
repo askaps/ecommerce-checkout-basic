@@ -14,5 +14,5 @@ export function SetupSwagger(app: INestApplication, service: string, modules: an
     deepScanRoutes: true,
   });
 
-  SwaggerModule.setup(`${service}/api/v1/docs`, app, document);
+  SwaggerModule.setup(`${service}/api/docs`, app, document);
 }
