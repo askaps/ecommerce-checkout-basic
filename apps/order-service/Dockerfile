@@ -6,7 +6,6 @@ COPY package.json ./
 COPY yarn.lock ./
 COPY tsconfig*.json ./
 COPY nest-cli.json ./
-COPY .npmrc ./
 COPY ./libs ./libs
 COPY ./apps/order-service/tsconfig.app.json ./apps/order-service/tsconfig.app.json
 
