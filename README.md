@@ -2,6 +2,10 @@
 
 Microservices based api structure for basic ecommerce cart and checkout with coupons
 
+Live at: https://ecb-microservices-personal-no-organization-48ffca2f.koyeb.app
+
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d%26entityType%3Dcollection%26workspaceId%3D61d3f6cf-bef9-4e2e-aeee-33273af7e7b9)
+
 ### Functional Requirements:
 
 1. API to create cart
@@ -110,8 +114,6 @@ Admin
 ### Components
 
 1. API Layer - Endpoints (postman_collection.json):
-
-[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d%26entityType%3Dcollection%26workspaceId%3D61d3f6cf-bef9-4e2e-aeee-33273af7e7b9)
 
 **Swagger Documentation: {BASE_URL}/order-service/api/docs**
 
