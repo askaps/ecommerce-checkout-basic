@@ -15,25 +15,21 @@ export class CheckoutsRepository {
    * @return {Promise<TOrder>} A promise that resolves to the newly created order.
    */
   async create(ctx: string, request: TOrder): Promise<TOrder> {
-    // Store the order in the cache with a TTL of 1 year (365 days)
-    await this.cacheManager.set(request.id, request, 365 * 3600 * 1000);
+    // Get the list of orders from the cache. If it doesn't exist, create an empty array.
+    // Replicating database table
+    const orders: TOrder[] = (await this.cacheManager.get('orders')) || [];
+
+    // Add the new coupon code to the array.
+    // Replicating insert
+    orders.push(request);
+
+    // Store the updated list of coupons in the cache with a TTL of 1 year (365 days).
+    await this.cacheManager.set('orders', orders, 365 * 3600 * 1000);
 
     // mock function to increment order count for coupon usage
     await this.incrementOrderCount(ctx);
 
-    return await this.get(ctx, request.id);
-  }
-
-  /**
-   * Retrieves an order from the cache by its id.
-   *
-   * @param {string} ctx - The context of the request.
-   * @param {string} id - The id of the order to retrieve.
-   * @return {Promise<TOrder>} A promise that resolves to the order with the
-   * given id.
-   */
-  async get(ctx: string, id: string): Promise<TOrder> {
-    return await this.cacheManager.get(id);
+    return request;
   }
 
   /**
@@ -52,5 +48,15 @@ export class CheckoutsRepository {
     await this.cacheManager.set('orderCount', orderCount, 365 * 3600 * 1000);
 
     return orderCount;
+  }
+
+  /**
+   * Retrieves all orders from the cache.
+   *
+   * @param {string} ctx - The context of the request.
+   * @return {Promise<TOrder[]>} A promise that resolves to an array of orders.
+   */
+  async getAll(ctx: string): Promise<TOrder[]> {
+    return (await this.cacheManager.get('orders')) || [];
   }
 }

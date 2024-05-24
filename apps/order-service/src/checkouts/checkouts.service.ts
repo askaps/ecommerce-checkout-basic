@@ -1,5 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { LoggerModule } from '@app/shared';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { CheckedException, LoggerModule } from '@app/shared';
 import { ConfigService } from '@nestjs/config';
 import { CheckoutsRepository } from './checkouts.repository';
 import { TOrder } from './entities/order.entity';
@@ -39,7 +39,23 @@ export class CheckoutsService {
 
       return order;
     } catch (error) {
-      throw error;
+      throw new CheckedException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, ctx);
+    }
+  }
+
+  /**
+   * Retrieves all orders from the repository.
+   *
+   * @param ctx - The context of the request.
+   * @returns A promise that resolves to an array of orders.
+   * @throws If there is an error retrieving the orders.
+   */
+  async getAll(ctx: string): Promise<TOrder[]> {
+    try {
+      // Retrieve all orders from the repository
+      return await this.repository.getAll(ctx);
+    } catch (error) {
+      throw new CheckedException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, ctx);
     }
   }
 }

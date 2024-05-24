@@ -8,11 +8,13 @@ import { ConfigService } from '@nestjs/config';
 import { CheckedException } from '@app/shared';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { CouponsService } from '../coupons/coupons.service';
 
 describe('CartsService', () => {
   let service: CartsService;
   let repository: CartsRepository;
   let configService: ConfigService;
+  let couponsService: CouponsService;
   let cacheManager: Cache;
 
   beforeEach(async () => {
@@ -40,12 +42,19 @@ describe('CartsService', () => {
             get: jest.fn().mockResolvedValue(null),
           },
         },
+        {
+          provide: CouponsService,
+          useValue: {
+            get: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     service = module.get<CartsService>(CartsService);
     repository = module.get<CartsRepository>(CartsRepository);
     configService = module.get<ConfigService>(ConfigService);
+    couponsService = module.get<CouponsService>(CouponsService);
     cacheManager = module.get<Cache>(CACHE_MANAGER);
   });
 
@@ -211,12 +220,20 @@ describe('CartsService', () => {
         get: jest.fn(),
       };
       const cartsRepository = {
-        findOne: jest.fn(),
+        get: jest.fn(),
       };
       const cacheManager = {
         get: jest.fn(),
       };
-      service = new CartsService(configService as any, cartsRepository as any, cacheManager as any);
+      const couponsService = {
+        get: jest.fn(),
+      };
+      service = new CartsService(
+        configService as any,
+        cartsRepository as any,
+        cacheManager as any,
+        couponsService as any,
+      );
     });
 
     it('should calculate totals correctly with no coupon code', async () => {
@@ -263,6 +280,9 @@ describe('CartsService', () => {
 
       const nthOrderCouponValue = 10;
       (service.config.get as jest.Mock).mockReturnValueOnce(nthOrderCouponValue);
+
+      const couponValidity = 'COUPON123';
+      jest.spyOn(couponsService, 'get').mockResolvedValueOnce(couponValidity);
 
       const id = uuidv4();
       const userId = uuidv4();

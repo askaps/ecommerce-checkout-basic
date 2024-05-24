@@ -9,6 +9,7 @@ import { TCartProduct } from './entities/cart-product.entity';
 import { PatchCartDto } from './dto/patch-cart.dto';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
+import { CouponsService } from '../coupons/coupons.service';
 
 @Injectable()
 export class CartsService {
@@ -18,6 +19,7 @@ export class CartsService {
     readonly config: ConfigService,
     private readonly repository: CartsRepository,
     @Inject(CACHE_MANAGER) private cacheManager: Cache,
+    private readonly couponsService: CouponsService,
   ) {}
 
   /**
@@ -131,7 +133,7 @@ export class CartsService {
   prepareCartProducts(ctx: string, request: UpdateCartDto): TCartProduct[] {
     const cartProducts: TCartProduct[] = [];
 
-    request.products.forEach((product) => {
+    request.products?.forEach((product) => {
       // get products data from store
       const cartProduct: TCartProduct = {
         id: product.id,
@@ -150,7 +152,7 @@ export class CartsService {
    * Calculates the totals of a cart.
    *
    * @param ctx - The context of the request.
-  async  * @param cart - The cart to calculate the totals for.Promise<TCart>
+   * @param cart - The cart to calculate the totals for.Promise<TCart>
    * @param [couponCode] - The coupon code to apply to the cart.
    * @returns A promise that resolves to the cart.
    */
@@ -162,32 +164,13 @@ export class CartsService {
       total: 0,
     };
 
-    // check coupon code validity: mock by enviroment variable
+    // check coupon code validity
     if (couponCode) {
-      // TODO: check coupon validity using nthOrderDiscountCount
-      const nthOrderDiscountCount = this.config.get<number>('nthOrderDiscountCount');
-
-      // get previously saved order count
-      const previousOrderCount = parseInt(await this.cacheManager.get('orderCount')) || 0;
-
-      // get coupon discount value
-      const nthOrderCouponValue = this.config.get<number>('nthOrderCouponValue');
-
-      // check if previousOrderCount + 1 is divided by nthOrderDiscountCount
-      // that is current order should get discount
-      if ((previousOrderCount + 1) % nthOrderDiscountCount === 0 && nthOrderCouponValue) {
-        cart.products.forEach((product) => {
-          product.discount = product.subTotal / nthOrderCouponValue;
-        });
-
-        cart.couponCode = couponCode;
-      } else {
-        cart.couponCode = null;
-      }
+      cart = await this.applyCoupon(ctx, cart, couponCode);
     }
 
     // Iterate through the cart's products and add their subTotal and discount to the totals
-    cart.products.forEach((product) => {
+    cart.products?.forEach((product) => {
       totals.subTotal += product.price * product.quantity;
       totals.discount += product.discount || 0;
     });
@@ -200,6 +183,42 @@ export class CartsService {
       ...cart,
       ...totals,
     };
+  }
+
+  /**
+   * Applies a coupon code to the given cart, if it is valid and the current order should receive a discount.
+   *
+   * @param {string} ctx - The context of the request.
+   * @param {TCart} cart - The cart to apply the coupon code to.
+   * @param {string} couponCode - The coupon code to apply.
+   * @return {Promise<TCart>} The updated cart with the applied coupon code and discounts.
+   */
+  async applyCoupon(ctx, cart: TCart, couponCode: string): Promise<TCart> {
+    const couponValidity = await this.couponsService.get(ctx, couponCode);
+
+    console.log(couponCode, couponValidity);
+
+    const nthOrderDiscountCount = this.config.get<number>('nthOrderDiscountCount');
+
+    // get previously saved order count
+    const previousOrderCount = parseInt(await this.cacheManager.get('orderCount')) || 0;
+
+    // get coupon discount value
+    const nthOrderCouponValue = this.config.get<number>('nthOrderCouponValue');
+
+    // check if previousOrderCount + 1 is divided by nthOrderDiscountCount
+    // that is current order should get discount
+    // TODO: apply rule engine to calculate discount
+    if (couponValidity && (previousOrderCount + 1) % nthOrderDiscountCount === 0 && nthOrderCouponValue) {
+      cart.products?.forEach((product) => {
+        product.discount = product.subTotal / nthOrderCouponValue;
+      });
+
+      cart.couponCode = couponCode;
+    } else {
+      cart.couponCode = null;
+    }
+    return cart;
   }
 
   /**

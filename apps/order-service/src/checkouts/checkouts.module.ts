@@ -9,5 +9,6 @@ import { CartsModule } from '../carts/carts.module';
   imports: [AuthModule, CartsModule],
   providers: [CheckoutsRepository, CheckoutsService],
   controllers: [CheckoutsController],
+  exports: [CheckoutsService],
 })
 export class CheckoutsModule {}
