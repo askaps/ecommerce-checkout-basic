@@ -25,6 +25,7 @@ describe('CartsService', () => {
           provide: CACHE_MANAGER,
           useValue: {
             get: jest.fn().mockResolvedValue('1'),
+            set: jest.fn(),
           },
         },
         CartsService,
@@ -224,6 +225,7 @@ describe('CartsService', () => {
       };
       const cacheManager = {
         get: jest.fn(),
+        set: jest.fn(),
       };
       const couponsService = {
         get: jest.fn(),
@@ -282,7 +284,6 @@ describe('CartsService', () => {
       (service.config.get as jest.Mock).mockReturnValueOnce(nthOrderCouponValue);
 
       const couponValidity = 'COUPON123';
-      jest.spyOn(couponsService, 'get').mockResolvedValueOnce(couponValidity);
 
       const id = uuidv4();
       const userId = uuidv4();
@@ -313,6 +314,33 @@ describe('CartsService', () => {
         total: 35,
         couponCode: 'COUPON123',
       };
+
+      jest.spyOn(service, 'applyCoupon').mockResolvedValue({
+        id,
+        userId,
+        products: [
+          {
+            id: '1',
+            name: 'Product 1',
+            quantity: 2,
+            price: 10,
+            subTotal: 20,
+            discount: 2,
+          },
+          {
+            id: '2',
+            name: 'Product 2',
+            quantity: 3,
+            price: 5,
+            subTotal: 15,
+            discount: 1.5,
+          },
+        ],
+        subTotal: 35,
+        discount: 3.5,
+        total: 31.5,
+        couponCode: 'COUPON123',
+      });
 
       const result = await service.calculateTotals('context', cart, 'COUPON123');
 

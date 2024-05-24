@@ -35,7 +35,7 @@ describe('CheckoutsService', () => {
         {
           provide: CartsRepository,
           useValue: {
-            findOne: jest.fn(),
+            get: jest.fn(),
           },
         },
       ],
