@@ -4,7 +4,8 @@
 		"name": "Ecommerce Checkout Demo",
 		"description": "Demonstrate api structure of basic ecommerce cart and checkout",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "21370371"
+		"_exporter_id": "21370371",
+		"_collection_link": "https://www.postman.com/altimetry-explorer-88791168/workspace/public/collection/21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d?action=share&source=collection_link&creator=21370371"
 	},
 	"item": [
 		{
@@ -162,10 +163,12 @@
 															}
 														],
 														"url": {
-															"raw": "{{baseUrl}}/order-service/api/v1/carts/cart_17c886aa-efa1-4837-a1f6-805868ae98d7",
+															"raw": "http://localhost:4000/order-service/api/v1/carts/cart_17c886aa-efa1-4837-a1f6-805868ae98d7",
+															"protocol": "http",
 															"host": [
-																"{{baseUrl}}"
+																"localhost"
 															],
+															"port": "4000",
 															"path": [
 																"order-service",
 																"api",
@@ -390,7 +393,82 @@
 													]
 												}
 											},
-											"response": []
+											"response": [
+												{
+													"name": "success",
+													"originalRequest": {
+														"method": "PATCH",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															},
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"couponCode\": \"string\"\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/order-service/api/v1/carts/cart_904aee46-c8b7-47ad-9acb-05fc45277036",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"order-service",
+																"api",
+																"v1",
+																"carts",
+																"cart_904aee46-c8b7-47ad-9acb-05fc45277036"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "X-Powered-By",
+															"value": "Express"
+														},
+														{
+															"key": "Content-Type",
+															"value": "application/json; charset=utf-8"
+														},
+														{
+															"key": "Content-Length",
+															"value": "325"
+														},
+														{
+															"key": "ETag",
+															"value": "W/\"145-wCc62tUJ42M+hOzHFFbjHOMhJ5s\""
+														},
+														{
+															"key": "Date",
+															"value": "Fri, 24 May 2024 12:56:37 GMT"
+														},
+														{
+															"key": "Connection",
+															"value": "keep-alive"
+														},
+														{
+															"key": "Keep-Alive",
+															"value": "timeout=5"
+														}
+													],
+													"cookie": [],
+													"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"cart_904aee46-c8b7-47ad-9acb-05fc45277036\",\n        \"userId\": \"123\",\n        \"subTotal\": 100,\n        \"discount\": 10,\n        \"total\": 90,\n        \"products\": [\n            {\n                \"id\": \"123\",\n                \"name\": \"Product Name - 123\",\n                \"quantity\": 1,\n                \"price\": 100,\n                \"subTotal\": 100,\n                \"discount\": 10\n            }\n        ],\n        \"couponCode\": \"string\"\n    },\n    \"statusCode\": 200,\n    \"message\": \"2ef9214d-2e84-4d45-be89-08fa34cfa032\"\n}"
+												}
+											]
 										}
 									]
 								},
@@ -452,10 +530,12 @@
 															}
 														],
 														"url": {
-															"raw": "{{baseUrl}}/order-service/api/v1/checkouts/cart_5164903f-3df2-41f2-aaf3-94d1fa46c5d3",
+															"raw": "http://localhost:4000/order-service/api/v1/checkouts/cart_5164903f-3df2-41f2-aaf3-94d1fa46c5d3",
+															"protocol": "http",
 															"host": [
-																"{{baseUrl}}"
+																"localhost"
 															],
+															"port": "4000",
 															"path": [
 																"order-service",
 																"api",
@@ -563,10 +643,12 @@
 																	}
 																],
 																"url": {
-																	"raw": "{{baseUrl}}/order-service/api/admin/v1/overview",
+																	"raw": "http://localhost:4000/order-service/api/admin/v1/overview",
+																	"protocol": "http",
 																	"host": [
-																		"{{baseUrl}}"
+																		"localhost"
 																	],
+																	"port": "4000",
 																	"path": [
 																		"order-service",
 																		"api",
@@ -792,7 +874,8 @@
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://localhost:4000"
+			"value": "http://localhost:4000",
+			"type": "string"
 		},
 		{
 			"key": "bearerToken",
