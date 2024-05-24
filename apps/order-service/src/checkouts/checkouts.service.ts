@@ -37,6 +37,13 @@ export class CheckoutsService {
       this.logger.info(ctx, `Deleting cart with id: ${cartId}`);
       this.cartsService.delete(ctx, cartId);
 
+      // TODO: Delete used coupon
+      // commented because want to show coupons
+      // if (cart.couponCode) {
+      // this.logger.info(ctx, `Deleting couponCode: ${cart.couponCode}`);
+      // await this.couponsService.delete(ctx, cart.couponCode);
+      // }
+
       return order;
     } catch (error) {
       throw new CheckedException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, ctx);
