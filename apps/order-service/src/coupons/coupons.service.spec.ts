@@ -16,6 +16,7 @@ describe('CouponsService', () => {
           provide: CouponsRepository,
           useValue: {
             create: jest.fn(),
+            get: jest.fn(),
           },
         },
         {
@@ -43,10 +44,10 @@ describe('CouponsService', () => {
 
       createSpy.mockResolvedValue(expectedCoupon);
 
-      const result = await service.create(ctx, code);
+      const result = await service.create(ctx, { code });
 
-      expect(createSpy).toHaveBeenCalledWith(ctx, code);
-      expect(result).toEqual(expectedCoupon);
+      expect(createSpy).toHaveBeenCalledWith(ctx, { code });
+      expect(result).toEqual({ code: expectedCoupon });
     });
   });
 
@@ -56,24 +57,24 @@ describe('CouponsService', () => {
       const code = 'test_code';
       const expectedCouponId = 'test_coupon_id';
 
-      jest.spyOn(repository, 'create').mockResolvedValue(expectedCouponId);
+      jest.spyOn(repository, 'get').mockResolvedValue(expectedCouponId);
 
       const result = await service.get(ctx, code);
 
+      expect(repository.get).toHaveBeenCalledWith(ctx, code);
       expect(result).toEqual(expectedCouponId);
-      expect(repository.create).toHaveBeenCalledWith(ctx, code);
     });
 
     it('should return null if coupon is not found', async () => {
       const ctx = 'test';
       const code = 'test_code';
 
-      jest.spyOn(repository, 'create').mockResolvedValue(null);
+      jest.spyOn(repository, 'get').mockResolvedValue(null);
 
       const result = await service.get(ctx, code);
 
+      expect(repository.get).toHaveBeenCalledWith(ctx, code);
       expect(result).toBeNull();
-      expect(repository.create).toHaveBeenCalledWith(ctx, code);
     });
   });
 
