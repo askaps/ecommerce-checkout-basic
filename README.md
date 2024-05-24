@@ -22,16 +22,19 @@
 
 ### Components
 
-1. API Layer - Endpoints:
-   | API | Type | Description |
-   | -------------------- | ----- |------------ |
-   | `v1/carts` | POST | Create cart |
-   | `v1/carts/{cartId}` | GET | Get cart |
-   | `v1/carts/{cartId}` | POST | Add item(s) to cart |
-   | `v1/carts/{cartId}` | PATCH | Apply coupon |
-   | `v1/checkouts/{cartId}` | POST | Initiate checkout |
-   | `admin/v1/coupons` | POST | Generate coupon |
-   | `admin/v1/overview` | GET | Get overview of order stats |
+1. API Layer - Endpoints (postman_collection.json):
+
+[<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d%26entityType%3Dcollection%26workspaceId%3D61d3f6cf-bef9-4e2e-aeee-33273af7e7b9)
+
+| API                     | Type  | Description                 |
+| ----------------------- | ----- | --------------------------- |
+| `v1/carts`              | POST  | Create cart                 |
+| `v1/carts/{cartId}`     | GET   | Get cart                    |
+| `v1/carts/{cartId}`     | POST  | Add item(s) to cart         |
+| `v1/carts/{cartId}`     | PATCH | Apply coupon                |
+| `v1/checkouts/{cartId}` | POST  | Initiate checkout           |
+| `admin/v1/coupons`      | POST  | Generate coupon             |
+| `admin/v1/overview`     | GET   | Get overview of order stats |
 
 2. Business Logic Layer
 

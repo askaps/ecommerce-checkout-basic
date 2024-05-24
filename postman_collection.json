@@ -1,0 +1,803 @@
+{
+	"info": {
+		"_postman_id": "6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d",
+		"name": "Ecommerce Checkout Demo",
+		"description": "Demonstrate api structure of basic ecommerce cart and checkout",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21370371"
+	},
+	"item": [
+		{
+			"name": "order-service",
+			"item": [
+				{
+					"name": "api",
+					"item": [
+						{
+							"name": "v1",
+							"item": [
+								{
+									"name": "carts",
+									"item": [
+										{
+											"name": "Creates a new cart with the provided context and user ID.",
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{bearerToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"uuid": "a81de43a-46bf-4a4c-9046-3dd1f623dd8c"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/order-service/api/v1/carts",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"order-service",
+														"api",
+														"v1",
+														"carts"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "success",
+													"originalRequest": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/order-service/api/v1/carts",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"order-service",
+																"api",
+																"v1",
+																"carts"
+															]
+														}
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "X-Powered-By",
+															"value": "Express"
+														},
+														{
+															"key": "Content-Type",
+															"value": "application/json; charset=utf-8"
+														},
+														{
+															"key": "Content-Length",
+															"value": "191"
+														},
+														{
+															"key": "ETag",
+															"value": "W/\"bf-oF/0YSHrF9Ic5f7ShFv53+3FCbQ\""
+														},
+														{
+															"key": "Date",
+															"value": "Fri, 24 May 2024 12:28:41 GMT"
+														},
+														{
+															"key": "Connection",
+															"value": "keep-alive"
+														},
+														{
+															"key": "Keep-Alive",
+															"value": "timeout=5"
+														}
+													],
+													"cookie": [],
+													"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"cart_17c886aa-efa1-4837-a1f6-805868ae98d7\",\n        \"userId\": \"123\",\n        \"subTotal\": 0,\n        \"discount\": 0,\n        \"total\": 0\n    },\n    \"statusCode\": 201,\n    \"message\": \"419457a4-6f53-4d37-b9c6-62154e61ceba\"\n}"
+												}
+											]
+										},
+										{
+											"name": "Gets a cart by ID.",
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{bearerToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"uuid": "2a2e2a30-1fe0-4c76-af12-a16fad4814ee"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/order-service/api/v1/carts/cart_17c886aa-efa1-4837-a1f6-805868ae98d7",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"order-service",
+														"api",
+														"v1",
+														"carts",
+														"cart_17c886aa-efa1-4837-a1f6-805868ae98d7"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "success",
+													"originalRequest": {
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/order-service/api/v1/carts/cart_17c886aa-efa1-4837-a1f6-805868ae98d7",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"order-service",
+																"api",
+																"v1",
+																"carts",
+																"cart_17c886aa-efa1-4837-a1f6-805868ae98d7"
+															]
+														}
+													},
+													"status": "OK",
+													"code": 200,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "X-Powered-By",
+															"value": "Express"
+														},
+														{
+															"key": "Content-Type",
+															"value": "application/json; charset=utf-8"
+														},
+														{
+															"key": "Content-Length",
+															"value": "302"
+														},
+														{
+															"key": "ETag",
+															"value": "W/\"12e-4TSPYO8mwijJs9uXLlw3XFzXT+c\""
+														},
+														{
+															"key": "Date",
+															"value": "Fri, 24 May 2024 12:29:58 GMT"
+														},
+														{
+															"key": "Connection",
+															"value": "keep-alive"
+														},
+														{
+															"key": "Keep-Alive",
+															"value": "timeout=5"
+														}
+													],
+													"cookie": [],
+													"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"cart_17c886aa-efa1-4837-a1f6-805868ae98d7\",\n        \"userId\": \"123\",\n        \"subTotal\": 100,\n        \"discount\": 0,\n        \"total\": 100,\n        \"products\": [\n            {\n                \"id\": \"123\",\n                \"name\": \"Product Name - 123\",\n                \"quantity\": 1,\n                \"price\": 100,\n                \"subTotal\": 100,\n                \"discount\": 0\n            }\n        ]\n    },\n    \"statusCode\": 200,\n    \"message\": \"e063da6e-2f0e-45b2-a3c3-8dfee6e48cba\"\n}"
+												}
+											]
+										},
+										{
+											"name": "Add product - Updates a cart by ID.",
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{bearerToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"uuid": "61aa6ea0-67a2-44c6-902d-93c31336d7bd"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"uuid": "b1aa22ec-499c-476a-ba84-3a61ed5de259"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"products\": [\n    {\n      \"id\": \"123\",\n      \"quantity\": 1\n    }\n  ]\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/order-service/api/v1/carts/cart_ed51bc75-b272-40d7-81d0-e4deb2a23793",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"order-service",
+														"api",
+														"v1",
+														"carts",
+														"cart_ed51bc75-b272-40d7-81d0-e4deb2a23793"
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "success",
+													"originalRequest": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json"
+															},
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"products\": [\n    {\n      \"id\": \"123\",\n      \"quantity\": 1\n    }\n  ]\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/order-service/api/v1/carts/cart_17c886aa-efa1-4837-a1f6-805868ae98d7",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"order-service",
+																"api",
+																"v1",
+																"carts",
+																"cart_17c886aa-efa1-4837-a1f6-805868ae98d7"
+															]
+														}
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "X-Powered-By",
+															"value": "Express"
+														},
+														{
+															"key": "Content-Type",
+															"value": "application/json; charset=utf-8"
+														},
+														{
+															"key": "Content-Length",
+															"value": "302"
+														},
+														{
+															"key": "ETag",
+															"value": "W/\"12e-gihQ+x6+nFDu3pVrDyT9URCPteU\""
+														},
+														{
+															"key": "Date",
+															"value": "Fri, 24 May 2024 12:29:32 GMT"
+														},
+														{
+															"key": "Connection",
+															"value": "keep-alive"
+														},
+														{
+															"key": "Keep-Alive",
+															"value": "timeout=5"
+														}
+													],
+													"cookie": [],
+													"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"cart_17c886aa-efa1-4837-a1f6-805868ae98d7\",\n        \"userId\": \"123\",\n        \"subTotal\": 100,\n        \"discount\": 0,\n        \"total\": 100,\n        \"products\": [\n            {\n                \"id\": \"123\",\n                \"name\": \"Product Name - 123\",\n                \"quantity\": 1,\n                \"price\": 100,\n                \"subTotal\": 100,\n                \"discount\": 0\n            }\n        ]\n    },\n    \"statusCode\": 200,\n    \"message\": \"c8a48ba8-b6ba-4bea-89dd-c4cb5ac29617\"\n}"
+												}
+											]
+										},
+										{
+											"name": "Apply Coupon - Applies partial modifications to a cart by ID.",
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{bearerToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "PATCH",
+												"header": [
+													{
+														"key": "Content-Type",
+														"value": "application/json",
+														"uuid": "65e73f15-6352-4481-a11e-396076bb39fb"
+													},
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"uuid": "c68b5e2f-cce7-4647-b1ed-213784f4812d"
+													}
+												],
+												"body": {
+													"mode": "raw",
+													"raw": "{\n  \"couponCode\": \"string\"\n}",
+													"options": {
+														"raw": {
+															"headerFamily": "json",
+															"language": "json"
+														}
+													}
+												},
+												"url": {
+													"raw": "{{baseUrl}}/order-service/api/v1/carts/cart_17c886aa-efa1-4837-a1f6-805868ae98d7",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"order-service",
+														"api",
+														"v1",
+														"carts",
+														"cart_17c886aa-efa1-4837-a1f6-805868ae98d7"
+													]
+												}
+											},
+											"response": []
+										}
+									]
+								},
+								{
+									"name": "checkouts",
+									"item": [
+										{
+											"name": "Create a new order by cartId.",
+											"request": {
+												"auth": {
+													"type": "bearer",
+													"bearer": [
+														{
+															"key": "token",
+															"value": "{{bearerToken}}",
+															"type": "string"
+														}
+													]
+												},
+												"method": "POST",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json",
+														"uuid": "263d0c44-6244-469c-bb23-22d20ad95183"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/order-service/api/v1/checkouts/:cartId",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"order-service",
+														"api",
+														"v1",
+														"checkouts",
+														":cartId"
+													],
+													"variable": [
+														{
+															"key": "cartId",
+															"value": "<string>",
+															"description": "(Required) Cart Id",
+															"uuid": "17827a0e-112e-4ad7-bc4e-d9dba320b76c"
+														}
+													]
+												}
+											},
+											"response": [
+												{
+													"name": "success",
+													"originalRequest": {
+														"method": "POST",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/order-service/api/v1/checkouts/cart_5164903f-3df2-41f2-aaf3-94d1fa46c5d3",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"order-service",
+																"api",
+																"v1",
+																"checkouts",
+																"cart_5164903f-3df2-41f2-aaf3-94d1fa46c5d3"
+															]
+														}
+													},
+													"status": "Created",
+													"code": 201,
+													"_postman_previewlanguage": "json",
+													"header": [
+														{
+															"key": "X-Powered-By",
+															"value": "Express"
+														},
+														{
+															"key": "Content-Type",
+															"value": "application/json; charset=utf-8"
+														},
+														{
+															"key": "Content-Length",
+															"value": "326"
+														},
+														{
+															"key": "ETag",
+															"value": "W/\"146-oKuvHhNvkyHepIrPdaIuAzEtu1g\""
+														},
+														{
+															"key": "Date",
+															"value": "Fri, 24 May 2024 12:39:52 GMT"
+														},
+														{
+															"key": "Connection",
+															"value": "keep-alive"
+														},
+														{
+															"key": "Keep-Alive",
+															"value": "timeout=5"
+														}
+													],
+													"cookie": [],
+													"body": "{\n    \"success\": true,\n    \"data\": {\n        \"id\": \"order_543e55d4-15e2-4c53-ac08-88635f67208a\",\n        \"userId\": \"123\",\n        \"subTotal\": 100,\n        \"discount\": 10,\n        \"total\": 90,\n        \"products\": [\n            {\n                \"id\": \"123\",\n                \"name\": \"Product Name - 123\",\n                \"quantity\": 1,\n                \"price\": 100,\n                \"subTotal\": 100,\n                \"discount\": 10\n            }\n        ],\n        \"couponCode\": \"string\"\n    },\n    \"statusCode\": 201,\n    \"message\": \"29fdf0b5-cb1a-4c05-8981-b35fe1808f10\"\n}"
+												}
+											]
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "admin",
+							"item": [
+								{
+									"name": "v1",
+									"item": [
+										{
+											"name": "overview",
+											"item": [
+												{
+													"name": "Retrieves orders, orderProducts and discounts with totalAmount ordered, totalDiscountAmount ",
+													"request": {
+														"auth": {
+															"type": "bearer",
+															"bearer": [
+																{
+																	"key": "token",
+																	"value": "{{bearerToken}}",
+																	"type": "string"
+																}
+															]
+														},
+														"method": "GET",
+														"header": [
+															{
+																"key": "Accept",
+																"value": "application/json",
+																"uuid": "c5a86f43-f7f2-4080-8f4d-292384aaeb89"
+															}
+														],
+														"url": {
+															"raw": "{{baseUrl}}/order-service/api/admin/v1/overview",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"order-service",
+																"api",
+																"admin",
+																"v1",
+																"overview"
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "success",
+															"originalRequest": {
+																"method": "GET",
+																"header": [
+																	{
+																		"key": "Accept",
+																		"value": "application/json"
+																	}
+																],
+																"url": {
+																	"raw": "{{baseUrl}}/order-service/api/admin/v1/overview",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"order-service",
+																		"api",
+																		"admin",
+																		"v1",
+																		"overview"
+																	]
+																}
+															},
+															"status": "OK",
+															"code": 200,
+															"_postman_previewlanguage": "json",
+															"header": [
+																{
+																	"key": "X-Powered-By",
+																	"value": "Express"
+																},
+																{
+																	"key": "Content-Type",
+																	"value": "application/json; charset=utf-8"
+																},
+																{
+																	"key": "Content-Length",
+																	"value": "894"
+																},
+																{
+																	"key": "ETag",
+																	"value": "W/\"37e-ZrQ+Dc31QFbtPcplWzABynmE6Tg\""
+																},
+																{
+																	"key": "Date",
+																	"value": "Fri, 24 May 2024 12:40:23 GMT"
+																},
+																{
+																	"key": "Connection",
+																	"value": "keep-alive"
+																},
+																{
+																	"key": "Keep-Alive",
+																	"value": "timeout=5"
+																}
+															],
+															"cookie": [],
+															"body": "{\n    \"success\": true,\n    \"data\": {\n        \"orders\": {\n            \"totalAmount\": 190,\n            \"totalDiscountAmount\": 10,\n            \"count\": 2,\n            \"data\": [\n                {\n                    \"id\": \"order_93179904-ca20-4ddb-be92-c13b5ac28049\",\n                    \"userId\": \"123\",\n                    \"subTotal\": 100,\n                    \"discount\": 0,\n                    \"total\": 100,\n                    \"products\": [\n                        {\n                            \"id\": \"123\",\n                            \"name\": \"Product Name - 123\",\n                            \"quantity\": 1,\n                            \"price\": 100,\n                            \"subTotal\": 100,\n                            \"discount\": 0\n                        }\n                    ],\n                    \"couponCode\": null\n                },\n                {\n                    \"id\": \"order_543e55d4-15e2-4c53-ac08-88635f67208a\",\n                    \"userId\": \"123\",\n                    \"subTotal\": 100,\n                    \"discount\": 10,\n                    \"total\": 90,\n                    \"products\": [\n                        {\n                            \"id\": \"123\",\n                            \"name\": \"Product Name - 123\",\n                            \"quantity\": 1,\n                            \"price\": 100,\n                            \"subTotal\": 100,\n                            \"discount\": 10\n                        }\n                    ],\n                    \"couponCode\": \"string\"\n                }\n            ]\n        },\n        \"products\": {\n            \"count\": 2,\n            \"data\": [\n                {\n                    \"id\": \"123\",\n                    \"name\": \"Product Name - 123\",\n                    \"quantity\": 1,\n                    \"price\": 100,\n                    \"subTotal\": 100,\n                    \"discount\": 0\n                },\n                {\n                    \"id\": \"123\",\n                    \"name\": \"Product Name - 123\",\n                    \"quantity\": 1,\n                    \"price\": 100,\n                    \"subTotal\": 100,\n                    \"discount\": 10\n                }\n            ]\n        },\n        \"coupons\": {\n            \"count\": 1,\n            \"data\": [\n                \"string\"\n            ]\n        }\n    },\n    \"statusCode\": 200,\n    \"message\": \"13fbe625-1b77-468d-a9ce-a6e6aa069540\"\n}"
+														}
+													]
+												}
+											]
+										},
+										{
+											"name": "create-coupon",
+											"item": [
+												{
+													"name": "Creates a new coupon",
+													"request": {
+														"auth": {
+															"type": "bearer",
+															"bearer": [
+																{
+																	"key": "token",
+																	"value": "{{bearerToken}}",
+																	"type": "string"
+																}
+															]
+														},
+														"method": "POST",
+														"header": [
+															{
+																"key": "Content-Type",
+																"value": "application/json",
+																"uuid": "ced9ec07-90d1-4d44-9614-a0940038e8fd"
+															},
+															{
+																"key": "Accept",
+																"value": "application/json",
+																"uuid": "3b6a0513-9ae3-43ca-893c-a1a7a30182f8"
+															}
+														],
+														"body": {
+															"mode": "raw",
+															"raw": "{\n  \"code\": \"string\"\n}",
+															"options": {
+																"raw": {
+																	"headerFamily": "json",
+																	"language": "json"
+																}
+															}
+														},
+														"url": {
+															"raw": "{{baseUrl}}/order-service/api/admin/v1/create-coupon",
+															"host": [
+																"{{baseUrl}}"
+															],
+															"path": [
+																"order-service",
+																"api",
+																"admin",
+																"v1",
+																"create-coupon"
+															]
+														}
+													},
+													"response": [
+														{
+															"name": "success",
+															"originalRequest": {
+																"method": "POST",
+																"header": [
+																	{
+																		"key": "Content-Type",
+																		"value": "application/json"
+																	},
+																	{
+																		"key": "Accept",
+																		"value": "application/json"
+																	}
+																],
+																"body": {
+																	"mode": "raw",
+																	"raw": "{\n  \"code\": \"string\"\n}",
+																	"options": {
+																		"raw": {
+																			"headerFamily": "json",
+																			"language": "json"
+																		}
+																	}
+																},
+																"url": {
+																	"raw": "{{baseUrl}}/order-service/api/admin/v1/create-coupon",
+																	"host": [
+																		"{{baseUrl}}"
+																	],
+																	"path": [
+																		"order-service",
+																		"api",
+																		"admin",
+																		"v1",
+																		"create-coupon"
+																	]
+																}
+															},
+															"status": "Created",
+															"code": 201,
+															"_postman_previewlanguage": "json",
+															"header": [
+																{
+																	"key": "X-Powered-By",
+																	"value": "Express"
+																},
+																{
+																	"key": "Content-Type",
+																	"value": "application/json; charset=utf-8"
+																},
+																{
+																	"key": "Content-Length",
+																	"value": "107"
+																},
+																{
+																	"key": "ETag",
+																	"value": "W/\"6b-kAFxw3hv0kcHq+59/yebf9C5diM\""
+																},
+																{
+																	"key": "Date",
+																	"value": "Fri, 24 May 2024 12:32:36 GMT"
+																},
+																{
+																	"key": "Connection",
+																	"value": "keep-alive"
+																},
+																{
+																	"key": "Keep-Alive",
+																	"value": "timeout=5"
+																}
+															],
+															"cookie": [],
+															"body": "{\n    \"success\": true,\n    \"data\": {\n        \"code\": \"string\"\n    },\n    \"statusCode\": 201,\n    \"message\": \"b4fddf26-0465-48ac-b8d1-1e9f0581d438\"\n}"
+														}
+													]
+												}
+											]
+										}
+									]
+								}
+							]
+						}
+					]
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{bearerToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:4000"
+		},
+		{
+			"key": "bearerToken",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiIxMjMiLCJyb2xlcyI6WyJBRE1JTiJdLCJpYXQiOjE3MTY1NTI4MTV9.ewPledDpewK6yMFWybd3X3rwTbH0p8tRPYgUfsIZ8JQ",
+			"type": "string"
+		}
+	]
+}
