@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { OrderServiceModule } from './order-service.module';
 import { AllExceptionsFilter, LogConfiguration, SetupSwagger } from '@app/shared';
 import { ValidationPipe } from '@nestjs/common';
+import { BadRequestExceptionFilter } from '@app/shared';
 
 async function bootstrap() {
   const app = await NestFactory.create(OrderServiceModule);
@@ -16,7 +17,7 @@ async function bootstrap() {
   try {
     app.setGlobalPrefix(`${appName}/api`);
     app.useLogger(logger);
-    app.useGlobalFilters(new AllExceptionsFilter());
+    app.useGlobalFilters(new AllExceptionsFilter(), new BadRequestExceptionFilter());
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
     SetupSwagger(app, appName, [OrderServiceModule]);
