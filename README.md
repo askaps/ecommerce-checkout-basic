@@ -18,6 +18,73 @@
 3. Unit tests to ensure code reliability.
 4. Use of an in-memory store.
 
+### Installation
+
+1. Install yarn as dependency manager
+
+```bash
+npm install --global yarn
+```
+
+2: Install required packages using yarn
+
+```bash
+yarn install
+```
+
+3: Rename .env-example to .env in root
+
+4: Change required configurations in .env
+
+```bash
+NODE_ENV=local
+JWT_SECRET={ANY_RANDOM_COMPLEX_STRING}
+
+# order-service
+ORDER_SERVICE_APPNAME=order-service
+ORDER_SERVICE_PORT=4000
+
+# nth order which will get discount if coupon applied
+ORDER_NTH_ORDER_DISCOUNT_COUNT=2
+
+# percentage based discount provided to every nth order
+ORDER_NTH_ORDER_COUPON_VALUE=10
+```
+
+5: Run service using
+
+```bash
+yarn run local:order-service
+```
+
+5: APIs base url will be served on: HOST:PORT/SERVICE_NAME/api/ENDPOINT
+eg: http://localhost:4000/order-service/api/v1/carts/123
+
+## Auth token generation
+
+1. Go to: https://10015.io/tools/jwt-encoder-decoder
+2. Put your signing key used as JWT_SECRET (ANY_RANDOM_COMPLEX_STRING) in .env
+3. Use one of below payload as json input
+   User:
+
+```bash
+{
+"userId": "123",
+"roles": []
+}
+```
+
+Admin
+
+```bash
+{
+"userId": "123",
+"roles": ["ADMIN"]
+}
+```
+
+4. Click on Encode button, a JWT token will be generated
+
 ## High-Level Design
 
 ### Components
@@ -25,6 +92,8 @@
 1. API Layer - Endpoints (postman_collection.json):
 
 [<img src="https://run.pstmn.io/button.svg" alt="Run In Postman" style="width: 128px; height: 32px;">](https://app.getpostman.com/run-collection/21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d?action=collection%2Ffork&source=rip_markdown&collection-url=entityId%3D21370371-6d2bc9e5-b52d-428e-8913-cb1bfd9ff93d%26entityType%3Dcollection%26workspaceId%3D61d3f6cf-bef9-4e2e-aeee-33273af7e7b9)
+
+**Swagger Documentation: {BASE_URL}/order-service/api/docs**
 
 | API                     | Type  | Description                 |
 | ----------------------- | ----- | --------------------------- |
