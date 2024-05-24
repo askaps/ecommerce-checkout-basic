@@ -4,5 +4,6 @@ import { CouponsService } from './coupons.service';
 
 @Module({
   providers: [CouponsRepository, CouponsService],
+  exports: [CouponsService],
 })
 export class CouponsModule {}

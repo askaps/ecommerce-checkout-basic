@@ -1,7 +1,8 @@
-import { Injectable } from '@nestjs/common';
-import { LoggerModule } from '@app/shared';
+import { HttpStatus, Injectable } from '@nestjs/common';
+import { CheckedException, LoggerModule } from '@app/shared';
 import { ConfigService } from '@nestjs/config';
 import { CouponsRepository } from './coupons.repository';
+import { CreateCouponDto } from './dto/create-coupon.dto';
 
 @Injectable()
 export class CouponsService {
@@ -13,19 +14,19 @@ export class CouponsService {
    * Creates a new coupon with the given code.
    *
    * @param {string} ctx - The context of the request.
-   * @param {string} code - The code for the coupon.
+   * @param {CreateCouponDto} request - The code for the coupon.
    * @return {Promise<string>} - A promise that resolves to the ID of the created coupon.
    * @throws {Error} - If an error occurs during the creation of the coupon.
    */
-  async create(ctx: string, code: string): Promise<string> {
+  async create(ctx: string, request: CreateCouponDto): Promise<{ code: string }> {
     try {
-      this.logger.info(ctx, `Creating new code with code: ${code}`);
+      this.logger.info(ctx, `Creating new code with code: ${request.code}`);
 
-      const coupon = await this.repository.create(ctx, code);
+      const coupon = await this.repository.create(ctx, request);
 
-      return coupon;
+      return { code: coupon };
     } catch (error) {
-      throw error;
+      throw new CheckedException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, ctx);
     }
   }
 
@@ -39,9 +40,9 @@ export class CouponsService {
    */
   async get(ctx: string, code: string): Promise<string | null> {
     try {
-      return await this.repository.create(ctx, code);
+      return await this.repository.get(ctx, code);
     } catch (error) {
-      throw error;
+      throw new CheckedException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, ctx);
     }
   }
 
@@ -61,7 +62,22 @@ export class CouponsService {
       return await this.repository.delete(ctx, code);
     } catch (error) {
       // Rethrow the error to be handled by the calling code
-      throw error;
+      throw new CheckedException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, ctx);
+    }
+  }
+
+  /**
+   * Retrieves all coupons from the repository.
+   *
+   * @param ctx - The context of the request.
+   * @returns A promise that resolves to an array of coupons.
+   * @throws If there is an error retrieving the coupons.
+   */
+  async getAll(ctx: string): Promise<string[]> {
+    try {
+      return await this.repository.getAll(ctx);
+    } catch (error) {
+      throw new CheckedException(error.message, HttpStatus.INTERNAL_SERVER_ERROR, ctx);
     }
   }
 }
