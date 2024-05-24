@@ -9,7 +9,6 @@ COPY tsconfig*.json ./
 COPY nest-cli.json ./
 COPY .npmrc ./
 COPY ./libs ./libs
-COPY ./prisma/order-service ./prisma/order-service
 COPY ./apps/order-service/tsconfig.app.json ./apps/order-service/tsconfig.app.json
 
 # Install dependencies
