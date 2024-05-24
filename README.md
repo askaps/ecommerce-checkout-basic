@@ -1,5 +1,7 @@
 # E-commerce Checkout
 
+Microservices based api structure for basic ecommerce cart and checkout with coupons
+
 ### Functional Requirements:
 
 1. API to create cart
@@ -59,6 +61,24 @@ yarn run local:order-service
 
 5: APIs base url will be served on: HOST:PORT/SERVICE_NAME/api/ENDPOINT
 eg: http://localhost:4000/order-service/api/v1/carts/123
+
+- Test cases can be invoked using
+
+```bash
+yarn run test
+```
+
+- To build a production release
+
+```bash
+yarn run build:order-service
+```
+
+- To run on production
+
+```bash
+yarn run start
+```
 
 ## Auth token generation
 
